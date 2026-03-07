@@ -1,0 +1,8 @@
+[
+  {
+    "label": "Send Request at Cursor",
+    "command": "cargo",
+    "args": ["run", "--release", "--features", "cli", "--bin", "http-execute", "--", "$ZED_FILE", "--line", "$ZED_ROW"],
+    "tags": ["http-request"]
+  }
+]

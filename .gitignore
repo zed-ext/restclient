@@ -1,0 +1,55 @@
+# Rust / Zed Extension
+target/
+Cargo.lock
+*.so
+*.dylib
+*.dll
+*.wasm
+
+# Tree-sitter generated files
+grammars/*/src/
+grammars/*/node_modules/
+grammars/**/parser.c
+grammars/**/binding.cc
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Test artifacts
+tests/fixtures/temp/
+.http-client/history/
+
+# Node.js (for grammar development)
+node_modules/
+package-lock.json
+
+# Python virtual environments
+venv/
+.venv/
+*.pyc
+
+# Logs
+*.log
+
+# Editor backups
+*.bak
+*.tmp
+
+# Old/redundant documentation (keep only README.md and docs/)
+
+# Archived documentation (development notes, not needed in repo)
+archived-docs/
+.zed/
+
+# Grammar backups
+grammars/*.backup
+
+# Built extension (generated during build)
+extension.wasm

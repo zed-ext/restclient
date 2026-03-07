@@ -1,0 +1,72 @@
+# ===================================================================
+# REST Client for Zed - Example Requests
+# ===================================================================
+#
+# HOW TO SEND REQUESTS:
+#   1. Press: Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows/Linux)
+#   2. Type: "spawn" or "task"
+#   3. Select: "task: spawn"
+#   4. Select: "Send Request"
+#   5. View response in the terminal panel!
+#
+# OR use the command line:
+#   cargo run --release --features cli --bin http-execute test.http
+#
+# See HOW_TO_SEND.md for keyboard shortcut setup
+# ===================================================================
+
+### Get a random user
+GET https://jsonplaceholder.typicode.com/users/1
+
+###
+### Get all posts
+GET https://jsonplaceholder.typicode.com/posts
+
+### Create a new post
+POST https://jsonplaceholder.typicode.com/posts
+Content-Type: application/json
+
+{
+  "title": "My New Post",
+  "body": "This is the content of my post",
+  "userId": 1
+}
+
+### Update a post
+PUT https://jsonplaceholder.typicode.com/posts/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "Updated Title",
+  "body": "Updated content",
+  "userId": 1
+}
+
+### Delete a post
+DELETE https://jsonplaceholder.typicode.com/posts/1
+
+### Test with headers
+GET https://httpbin.org/headers
+User-Agent: REST Client Test
+Accept: application/json
+Authorization: Bearer fake-token-for-testing
+
+### Test with query parameters
+GET https://httpbin.org/get?name=test&value=123
+
+### Test POST with form data
+POST https://httpbin.org/post
+Content-Type: application/x-www-form-urlencoded
+
+name=John&email=john@example.com&message=Hello
+
+### Variables example (parsed but not executed yet)
+@baseUrl = https://jsonplaceholder.typicode.com
+@userId = 5
+
+GET {{baseUrl}}/users/{{userId}}
+
+###
+### Get user's posts
+GET {{baseUrl}}/posts?userId={{userId}}

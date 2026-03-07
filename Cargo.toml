@@ -1,0 +1,47 @@
+[package]
+name = "zed-restclient"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+zed_extension_api = "0.7.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+regex = "1.10"
+url = "2.5"
+
+# Utilities
+mime = "0.3"
+chrono = "0.4"
+
+[dependencies.tokio]
+version = "1.0"
+features = ["rt", "macros"]
+
+[dependencies.reqwest]
+version = "0.12"
+features = ["blocking"]
+optional = true
+
+[dev-dependencies]
+tokio = { version = "1.0", features = ["full"] }
+
+[features]
+default = []
+full-js-parser = []
+minimal-js = []
+cli = ["reqwest"]
+
+[[bin]]
+name = "http-execute"
+path = "src/bin/http_execute.rs"
+required-features = ["cli"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true

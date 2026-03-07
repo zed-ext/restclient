@@ -1,0 +1,5 @@
+name = "HTTP Request"
+grammar = "http"
+path_suffixes = ["http", "rest"]
+line_comment = "# "
+block_comment = ["/*", "*/"]
