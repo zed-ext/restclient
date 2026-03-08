@@ -1,3 +1,4 @@
+use crate::variables::VariableResolver;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -97,16 +98,38 @@ struct RequestBlock {
 pub fn parse_http_file(content: &str) -> Result<Vec<HttpRequest>, String> {
     let mut requests = Vec::new();
 
+    // Create a variable resolver and parse file-level variables
+    let mut resolver = VariableResolver::new();
+    resolver.parse_file_variables(content);
+
     // Split by request separator (###) while tracking line numbers
     let blocks = split_by_separator_with_lines(content);
 
     for block in blocks {
-        if block.content.trim().is_empty() {
+        let trimmed = block.content.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+
+        // Skip blocks that only contain comments and variable declarations
+        let has_non_comment_content = trimmed.lines().any(|line| {
+            let line = line.trim();
+            !line.is_empty()
+                && !line.starts_with('#')
+                && !line.starts_with("//")
+                && !line.starts_with('@')
+        });
+
+        if !has_non_comment_content {
             continue;
         }
 
         match parse_request_block(&block.content, block.start_line, block.end_line) {
-            Ok(request) => requests.push(request),
+            Ok(mut request) => {
+                // Resolve variables in the request
+                resolve_request_variables(&mut request, &resolver);
+                requests.push(request);
+            }
             Err(e) => {
                 // Log error but continue parsing other requests
                 eprintln!("Error parsing request at line {}: {}", block.start_line, e);
@@ -323,4 +346,130 @@ fn parse_request_line(line: &str) -> Result<(HttpMethod, String, Option<String>)
     };
 
     Ok((method, url, http_version))
+}
+
+/// Resolve all variables in a parsed HTTP request
+fn resolve_request_variables(request: &mut HttpRequest, resolver: &VariableResolver) {
+    // Resolve URL
+    request.url = resolver.resolve(&request.url);
+
+    // Resolve header values
+    for (_, value) in &mut request.headers {
+        *value = resolver.resolve(value);
+    }
+
+    // Resolve body if present
+    if let Some(RequestBody::Inline(body)) = &mut request.body {
+        *body = resolver.resolve(body);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_variable_substitution_in_url() {
+        let content = r#"
+@baseUrl = https://api.example.com
+@userId = 123
+
+GET {{baseUrl}}/users/{{userId}}
+"#;
+        let requests = parse_http_file(content).unwrap();
+        assert_eq!(requests.len(), 1);
+        assert_eq!(requests[0].url, "https://api.example.com/users/123");
+    }
+
+    #[test]
+    fn test_variable_substitution_in_headers() {
+        let content = r#"
+@token = secret123
+@contentType = application/json
+
+GET https://api.example.com
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+"#;
+        let requests = parse_http_file(content).unwrap();
+        assert_eq!(requests.len(), 1);
+
+        // Find headers by name
+        let auth_header = requests[0]
+            .headers
+            .iter()
+            .find(|(name, _)| name == "Authorization")
+            .map(|(_, value)| value);
+        assert_eq!(auth_header, Some(&"Bearer secret123".to_string()));
+
+        let content_header = requests[0]
+            .headers
+            .iter()
+            .find(|(name, _)| name == "Content-Type")
+            .map(|(_, value)| value);
+        assert_eq!(content_header, Some(&"application/json".to_string()));
+    }
+
+    #[test]
+    fn test_variable_substitution_in_body() {
+        let content = r#"
+@username = john_doe
+@email = john@example.com
+
+POST https://api.example.com/users
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "email": "{{email}}"
+}
+"#;
+        let requests = parse_http_file(content).unwrap();
+        assert_eq!(requests.len(), 1);
+
+        if let Some(RequestBody::Inline(body)) = &requests[0].body {
+            assert!(body.contains(r#""username": "john_doe""#));
+            assert!(body.contains(r#""email": "john@example.com""#));
+        } else {
+            panic!("Expected inline body");
+        }
+    }
+
+    #[test]
+    fn test_nested_variable_resolution() {
+        let content = r#"
+@protocol = https
+@host = api.example.com
+@baseUrl = {{protocol}}://{{host}}
+@version = v1
+@endpoint = users
+
+GET {{baseUrl}}/{{version}}/{{endpoint}}
+"#;
+        let requests = parse_http_file(content).unwrap();
+        assert_eq!(requests.len(), 1);
+        assert_eq!(requests[0].url, "https://api.example.com/v1/users");
+    }
+
+    #[test]
+    fn test_undefined_variable_left_as_is() {
+        let content = r#"
+@defined = value
+
+GET https://{{undefined}}/api/{{defined}}
+Authorization: Bearer {{missingToken}}
+"#;
+        let requests = parse_http_file(content).unwrap();
+        assert_eq!(requests.len(), 1);
+
+        // Undefined variables should remain as-is
+        assert_eq!(requests[0].url, "https://{{undefined}}/api/value");
+
+        let auth_header = requests[0]
+            .headers
+            .iter()
+            .find(|(name, _)| name == "Authorization")
+            .map(|(_, value)| value);
+        assert_eq!(auth_header, Some(&"Bearer {{missingToken}}".to_string()));
+    }
 }

@@ -16,6 +16,7 @@ url = "2.5"
 # Utilities
 mime = "0.3"
 chrono = "0.4"
+atty = { version = "0.2.14", optional = true }
 
 [dependencies.tokio]
 version = "1.0"
@@ -33,7 +34,7 @@ tokio = { version = "1.0", features = ["full"] }
 default = []
 full-js-parser = []
 minimal-js = []
-cli = ["reqwest"]
+cli = ["reqwest", "atty"]
 
 [[bin]]
 name = "http-execute"

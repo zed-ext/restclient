@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use zed_extension_api::{self as zed, Result};
@@ -157,11 +158,20 @@ impl RestClientExtension {
 
         let request = &requests[idx];
 
+        // Log progress to stderr (visible in Zed's log panel)
+        let method_str = format!("{:?}", request.method);
+        eprintln!("⏳ Sending {} request to {}...", method_str, request.url);
+        let _ = std::io::stderr().flush();
+
+        let start_time = std::time::Instant::now();
+
         // Execute using Zed's HTTP client
         let response = self.execute_request_with_zed(request)?;
 
+        let elapsed = start_time.elapsed();
+        eprintln!("✓ Request completed in {:.2}s", elapsed.as_secs_f64());
+
         // Format output
-        let method_str = format!("{:?}", request.method);
         let output_text = format!(
             "# HTTP Request Executed\n\n\
              **{} {}**\n\n\

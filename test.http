@@ -70,3 +70,65 @@ GET {{baseUrl}}/users/{{userId}}
 ###
 ### Get user's posts
 GET {{baseUrl}}/posts?userId={{userId}}
+
+###
+### Test with 3 second delay to see progress indicator
+GET https://httpbin.org/delay/3
+
+###
+### Test with 5 second delay
+GET https://httpbin.org/delay/5
+
+###
+### Test with 10 second delay
+GET https://httpbin.org/delay/10
+
+###
+### ============================================
+### Variable Substitution Examples
+### ============================================
+
+@baseUrl = https://jsonplaceholder.typicode.com
+@userId = 5
+
+### Get user with variables
+GET {{baseUrl}}/users/{{userId}}
+
+### Get user's posts with variables
+GET {{baseUrl}}/posts?userId={{userId}}
+
+###
+### Nested variables example
+@protocol = https
+@host = httpbin.org
+@apiBase = {{protocol}}://{{host}}
+
+### Request using nested variables
+GET {{apiBase}}/get?test=nested
+
+###
+### Variables in headers
+@authToken = my-test-token-12345
+@userAgent = REST-Client-Zed/1.0
+
+### Authenticated request with variable headers
+GET https://httpbin.org/headers
+Authorization: Bearer {{authToken}}
+User-Agent: {{userAgent}}
+Accept: application/json
+
+###
+### Variables in POST body
+@newTitle = Created via Variable Substitution
+@newBody = This post uses variables in the JSON body
+@authorId = 1
+
+### Create post with variables in body
+POST https://jsonplaceholder.typicode.com/posts
+Content-Type: application/json
+
+{
+  "title": "{{newTitle}}",
+  "body": "{{newBody}}",
+  "userId": {{authorId}}
+}

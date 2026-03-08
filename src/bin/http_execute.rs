@@ -1,6 +1,9 @@
 use std::env;
 use std::fs;
-use std::io::{self, Read};
+use std::io::{self, Read, Write};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
 use zed_restclient::parser::{parse_http_file, HttpMethod};
 
 fn main() {
@@ -67,9 +70,9 @@ fn main() {
             eprintln!("Available requests:");
             for (i, req) in requests.iter().enumerate() {
                 eprintln!(
-                    "  {}. {} {} (lines {}-{})",
+                    "  {}. {:?} {} (lines {}-{})",
                     i + 1,
-                    format!("{:?}", req.method),
+                    req.method,
                     req.url,
                     req.metadata.start_line,
                     req.metadata.end_line
@@ -83,12 +86,38 @@ fn main() {
     };
 
     // Print which request we're executing
-    eprintln!(
-        ">>> Executing: {} {}",
-        format!("{:?}", request.method),
-        request.url
-    );
+    eprintln!(">>> Executing: {:?} {}", request.method, request.url);
     eprintln!();
+
+    // Show progress indicator with timer
+    let start_time = Instant::now();
+    let is_running = Arc::new(AtomicBool::new(true));
+    let is_running_clone = is_running.clone();
+
+    // Check if stderr is a terminal (supports \r carriage return)
+    let is_tty = atty::is(atty::Stream::Stderr);
+
+    if !is_tty {
+        eprintln!("⏳ Sending request...");
+    }
+
+    // Spawn a thread to display the timer
+    let timer_thread = std::thread::spawn(move || {
+        let start = Instant::now();
+        while is_running_clone.load(Ordering::Relaxed) {
+            let elapsed = start.elapsed();
+            let secs = elapsed.as_secs();
+            let millis = elapsed.subsec_millis();
+
+            if is_tty {
+                // Terminal supports carriage return - update in place
+                eprint!("\r⏳ Sending request... {}.{:03}s", secs, millis);
+                io::stderr().flush().unwrap();
+            }
+
+            std::thread::sleep(Duration::from_millis(50));
+        }
+    });
 
     // Convert to reqwest
     let client = reqwest::blocking::Client::new();
@@ -128,8 +157,21 @@ fn main() {
     }
 
     // Execute request
-    match req_builder.send() {
+    let result = req_builder.send();
+
+    // Stop the timer
+    is_running.store(false, Ordering::Relaxed);
+    timer_thread.join().unwrap();
+
+    match result {
         Ok(response) => {
+            let elapsed = start_time.elapsed();
+            eprint!("\r");
+            eprintln!(
+                "✓ Request completed in {}.{:03}s\n",
+                elapsed.as_secs(),
+                elapsed.subsec_millis()
+            );
             println!(
                 "HTTP/{:?} {} {}",
                 response.version(),
@@ -157,10 +199,10 @@ fn main() {
     }
 }
 
-fn find_request_at_line<'a>(
-    requests: &'a [zed_restclient::parser::HttpRequest],
+fn find_request_at_line(
+    requests: &[zed_restclient::parser::HttpRequest],
     line: usize,
-) -> Option<&'a zed_restclient::parser::HttpRequest> {
+) -> Option<&zed_restclient::parser::HttpRequest> {
     requests
         .iter()
         .find(|req| line >= req.metadata.start_line && line <= req.metadata.end_line)

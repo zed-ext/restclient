@@ -103,7 +103,7 @@ Click anywhere in the POST request (lines 5-12) and execute - only that request 
 ✅ **Multiple Request Formats** - Support for GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS
 ✅ **Headers & Body** - Full support for custom headers and request bodies
 ✅ **Request Separator** - Use `###` to separate multiple requests in a file
-✅ **Variable Support** - Use `{{variable}}` syntax (parsing ready, execution coming soon)
+✅ **Variable Support** - Use `@variable = value` and `{{variable}}` syntax
 ✅ **No Configuration Required** - Works out of the box
 
 ---
@@ -224,7 +224,7 @@ Content-Type: application/json
 }
 ```
 
-### Variables (Coming Soon)
+### Variables
 
 Declare variables with `@name = value`:
 
@@ -236,7 +236,20 @@ Declare variables with `@name = value`:
 GET {{baseUrl}}/users/{{userId}}
 ```
 
-**Note**: Variable parsing works, but substitution is not yet implemented.
+Variables are substituted at parse time and work in:
+- URLs
+- Header values
+- Request bodies
+
+Variables support nested resolution:
+
+```http
+@protocol = https
+@host = api.example.com
+@baseUrl = {{protocol}}://{{host}}
+
+GET {{baseUrl}}/api/users
+```
 
 ---
 
@@ -341,7 +354,7 @@ See `test.http` for comprehensive examples including:
 - [x] CLI tool for executing requests
 - [x] Zed task integration
 - [x] Cursor-based execution
-- [ ] Variable substitution in requests
+- [x] Variable substitution in requests
 - [ ] Environment management (`.http-client/environments.json`)
 - [ ] Response handlers with JavaScript
 - [ ] File reference support (`< ./file.json`)
