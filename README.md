@@ -1,4 +1,8 @@
-# REST Client Extension for Zed
+<div align="center">
+  <img src="docs/logo.svg" width="200" height="200" alt="REST Client">
+</div>
+
+<h1 align="center">REST Client Extension for Zed</h1>
 
 A REST client extension for Zed IDE that allows you to write and execute HTTP requests directly from `.http` files.
 
