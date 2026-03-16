@@ -1,0 +1,122 @@
+# Response Variable Capture
+# Demonstrates saving values from responses and reusing them in subsequent requests.
+# Uses JetBrains HTTP Client syntax: > {% client.global.set("name", expression) %}
+#
+# Captured variables are saved to .http-client/.global-variables.json
+# and persist across requests.
+
+### Step 1: Make a request and capture values from the response
+POST https://httpbin.org/post
+Content-Type: application/json
+
+{
+  "username": "ada",
+  "action": "login"
+}
+
+> {%
+  client.global.set("origin", response.body.origin);
+  client.global.set("request_url", response.body.url);
+%}
+
+###
+
+### Step 2: Use captured variables in the next request
+GET https://httpbin.org/anything
+X-Origin: {{origin}}
+X-Previous-URL: {{request_url}}
+
+### ── Capture response headers ────────────────────────────────
+
+### Capture a response header value
+GET https://httpbin.org/response-headers?X-Request-Id=abc-123&X-Trace=trace-456
+
+> {%
+  client.global.set("request_id", response.headers.valueOf("X-Request-Id"));
+  client.global.set("trace_id", response.headers.valueOf("X-Trace"));
+%}
+
+###
+
+### Use captured headers
+GET https://httpbin.org/headers
+X-Correlation-Id: {{request_id}}
+X-Parent-Trace: {{trace_id}}
+
+### ── Capture HTTP status code ────────────────────────────────
+
+### Capture the status code
+GET https://httpbin.org/status/200
+
+> {%
+  client.global.set("last_status", response.status);
+%}
+
+### ── Capture nested JSON fields ──────────────────────────────
+
+### Capture deeply nested values
+POST https://httpbin.org/post
+Content-Type: application/json
+
+{
+  "user": {
+    "profile": {
+      "name": "Ada Lovelace",
+      "settings": {
+        "theme": "dark"
+      }
+    }
+  }
+}
+
+> {%
+  client.global.set("user_name", response.body.json.user.profile.name);
+  client.global.set("user_theme", response.body.json.user.profile.settings.theme);
+%}
+
+###
+
+### Use deeply nested captured values
+GET https://httpbin.org/anything
+X-User-Name: {{user_name}}
+X-User-Theme: {{user_theme}}
+
+### ── Capture with static strings ─────────────────────────────
+
+### Set a static value alongside dynamic ones
+GET https://httpbin.org/get
+
+> {%
+  client.global.set("api_version", "v2");
+  client.global.set("last_checked_ip", response.body.origin);
+%}
+
+###
+
+### Use both static and captured variables
+GET https://httpbin.org/anything/{{api_version}}/status
+X-Client-IP: {{last_checked_ip}}
+
+### ── Typical auth flow ───────────────────────────────────────
+# This pattern works great with real APIs:
+#
+#   1. POST /login → capture token
+#   2. GET /protected → use token
+#
+# Example (won't work against httpbin, but shows the pattern):
+#
+#   POST https://api.example.com/auth/login
+#   Content-Type: application/json
+#
+#   { "username": "demo", "password": "secret" }
+#
+#   > {%
+#     client.global.set("token", response.body.access_token);
+#     client.global.set("refresh", response.body.refresh_token);
+#     client.global.set("user_id", response.body.user.id);
+#   %}
+#
+#   ###
+#
+#   GET https://api.example.com/users/{{user_id}}/profile
+#   Authorization: Bearer {{token}}

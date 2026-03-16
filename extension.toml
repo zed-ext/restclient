@@ -1,11 +1,12 @@
 id = "restclient"
 name = "REST Client"
 description = "HTTP client for testing REST APIs with .http files"
-version = "0.1.0"
+version = "0.2.1"
 schema_version = 1
-authors = ["REST Client Contributors"]
-repository = "https://github.com/tongzhou/zed-restclient"
+authors = ["Tong Zhou"]
+repository = "https://github.com/zed-ext/restclient"
 languages = ["languages/http"]
+capabilities = []
 
 [lib]
 kind = "Rust"
@@ -15,10 +16,10 @@ version = "0.7.0"
 repository = "https://github.com/rest-nvim/tree-sitter-http"
 rev = "db8b4398de90b6d0b6c780aba96aaa2cd8e9202c"
 
-[slash_commands.send]
-description = "Execute an HTTP request from a .http file"
-requires_argument = false
+[language_servers.http-lsp]
+name = "HTTP LSP"
+language = "HTTP"
 
-[slash_commands.http]
-description = "Execute HTTP request - usage: /http <file> [request-number]"
-requires_argument = true
+[language_servers.http-lsp.language_ids]
+HTTP = "http"
+

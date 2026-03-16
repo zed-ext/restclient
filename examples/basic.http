@@ -1,0 +1,66 @@
+# Basic HTTP Requests
+# Demonstrates GET, POST, PUT, PATCH, DELETE with headers and bodies.
+# All examples use httpbin.org — a free HTTP testing service.
+
+### Simple GET
+GET https://httpbin.org/get
+
+### GET with headers
+GET https://httpbin.org/headers
+Accept: application/json
+X-Custom-Header: hello-from-zed
+
+### POST with JSON body
+POST https://httpbin.org/post
+Content-Type: application/json
+
+{
+  "name": "Ada Lovelace",
+  "email": "ada@example.com",
+  "role": "engineer"
+}
+
+### PUT — replace a resource
+PUT https://httpbin.org/put
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Ada Lovelace",
+  "email": "ada@example.com",
+  "role": "lead engineer"
+}
+
+### PATCH — partial update
+PATCH https://httpbin.org/patch
+Content-Type: application/json
+
+{
+  "role": "principal engineer"
+}
+
+### DELETE a resource
+DELETE https://httpbin.org/delete
+
+### POST form data
+POST https://httpbin.org/post
+Content-Type: application/x-www-form-urlencoded
+
+username=ada&password=secret123
+
+### GET with query parameters
+GET https://httpbin.org/response-headers?X-Custom=zed-rest-client&Version=1.0
+
+### HEAD request — headers only, no body
+HEAD https://httpbin.org/get
+
+### OPTIONS — check allowed methods
+OPTIONS https://httpbin.org/get
+
+### GET with authentication
+GET https://httpbin.org/bearer
+Authorization: Bearer my-secret-token
+
+### Basic auth
+GET https://httpbin.org/basic-auth/user/passwd
+Authorization: Basic dXNlcjpwYXNzd2Q=

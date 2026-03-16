@@ -1,92 +1,44 @@
-# 🚀 5-Minute Setup Guide
+# Quick Setup Guide
 
-## What You'll Get
+## Prerequisites
 
-Press `Ctrl+Enter` in any `.http` file to send the request at your cursor.
-
----
+- [Rust](https://rustup.rs/) (stable)
+- [Zed IDE](https://zed.dev/)
 
 ## Setup Steps
 
-### 1. Install Extension (if not done)
+### 1. Clone and Install
+
 ```bash
-cd /Users/tongzhou/poc/startup/zed/restclient
+git clone https://github.com/anthropics/zed-restclient.git
+cd zed-restclient
 ./install_to_zed.sh
 ```
 
 ### 2. Restart Zed
-- Press `Cmd+Q` to quit
-- Reopen Zed
 
-### 3. Add Keyboard Shortcut
+Completely quit Zed (`Cmd+Q` on macOS) and reopen it.
 
-**a)** Press `Cmd+,` to open settings
+### 3. Test It
 
-**b)** Click **"Open Keymap"** (top right)
+Create a file called `test.http`:
 
-**c)** Add this to the file:
-```json
-[
-  {
-    "context": "Editor && (path_extension(http) || path_extension(rest))",
-    "bindings": {
-      "ctrl-enter": ["task::Spawn", {"task_name": "Send Request at Cursor"}]
-    }
-  }
-]
-```
-
-**d)** Save the file (`Cmd+S`)
-
-### 4. Test It
-
-**a)** Create `test.http`:
 ```http
 ### Test request
 GET https://httpbin.org/get
 ```
 
-**b)** Click anywhere in the request
-
-**c)** Press `Ctrl+Enter`
-
-**d)** See the response in terminal!
-
----
-
-## Done! 🎉
-
-Now in any `.http` file:
-1. Place cursor in request
-2. Press `Ctrl+Enter`
-3. Get response
-
----
-
-## Alternative (No Keyboard Shortcut)
-
-If you don't want to set up the shortcut:
-
-1. Place cursor in request
-2. `Cmd+Shift+P` → Type "task spawn"
-3. Select "Send Request at Cursor"
-
-The keyboard shortcut is highly recommended though!
-
----
+You should see **▶ Send Request** and **⊕ Send in New Tab** buttons above the request. Click either one to execute.
 
 ## Troubleshooting
 
-**Ctrl+Enter doesn't work:**
-- Make sure you're in a `.http` or `.rest` file
-- Restart Zed after adding the keymap
-- Check the file extension is `.http` not `.txt`
+**▶ buttons don't appear:**
+- Restart Zed completely (`Cmd+Q` and reopen)
+- Check LSP is running: View → Server Logs → HTTP LSP
+- Reinstall: `./install_to_zed.sh`
 
-**Task not found:**
-- Run `./install_to_zed.sh` again
-- Restart Zed completely (`Cmd+Q`)
-- Check extension is installed: `Cmd+Shift+P` → "extensions"
+**Syntax highlighting not working:**
+- Check file extension is `.http` or `.rest`
+- Restart Zed completely
 
----
-
-See **CURSOR_BASED.md** for full documentation.
+See the [README](../README.md) for full documentation.

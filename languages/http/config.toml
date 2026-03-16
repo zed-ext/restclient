@@ -1,5 +1,13 @@
-name = "HTTP Request"
+name = "HTTP"
 grammar = "http"
 path_suffixes = ["http", "rest"]
 line_comment = "# "
-block_comment = ["/*", "*/"]
+autoclose_before = ";:.,=}])>"
+word_characters = ["-"]
+completion_query_characters = ["-", ":", "/", "{", " "]
+brackets = [
+    { start = "{", end = "}", close = true, newline = true },
+    { start = "[", end = "]", close = true, newline = true },
+    { start = "(", end = ")", close = true, newline = true },
+    { start = "\"", end = "\"", close = true, newline = false, not_in = ["string"] },
+]

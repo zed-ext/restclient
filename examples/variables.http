@@ -1,0 +1,68 @@
+# Variables & Environment
+# Demonstrates file-level variables, nested resolution, and environment variable references.
+
+### ── File-level variables ────────────────────────────────────
+@host = httpbin.org
+@baseUrl = https://{{host}}
+@contentType = application/json
+
+### GET using variables
+GET {{baseUrl}}/get
+Accept: {{contentType}}
+
+### POST using variables in URL, headers, and body
+POST {{baseUrl}}/post
+Content-Type: {{contentType}}
+
+{
+  "server": "{{host}}",
+  "message": "sent from Zed REST Client"
+}
+
+### ── Nested variable resolution ──────────────────────────────
+@protocol = https
+@domain = api.example.com
+@apiBase = {{protocol}}://{{domain}}
+@version = v2
+@endpoint = {{apiBase}}/{{version}}
+
+### Deeply nested variable
+# Resolves to: https://api.example.com/v2/users
+GET {{endpoint}}/users
+Accept: application/json
+
+### ── Variables in different positions ────────────────────────
+@token = my-secret-bearer-token
+@userId = 42
+
+### Variable in URL path
+GET {{baseUrl}}/anything/users/{{userId}}
+
+### Variable in header value
+GET {{baseUrl}}/headers
+Authorization: Bearer {{token}}
+
+### Variable in request body
+POST {{baseUrl}}/post
+Content-Type: {{contentType}}
+
+{
+  "user_id": "{{userId}}",
+  "token": "{{token}}"
+}
+
+### ── Environment variables ───────────────────────────────────
+# Variables from http-client.env.json (public) and
+# http-client.private.env.json (private) are also available.
+# Follows JetBrains HTTP Client convention.
+#
+# Example: if your http-client.env.json defines:
+#   { "development": { "base_url": "https://httpbin.org" } }
+# and http-client.private.env.json defines:
+#   { "development": { "api_key": "dev-key-123" } }
+#
+# Then {{base_url}} and {{api_key}} resolve when development is active.
+
+### Using environment variable (requires http-client.env.json)
+# GET {{api_url}}/data
+# Authorization: Bearer {{api_key}}

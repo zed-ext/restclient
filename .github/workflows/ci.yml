@@ -10,12 +10,9 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-    name: Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+  build-wasm:
+    name: Build WASM Extension
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,8 +26,26 @@ jobs:
       - name: Build WASM extension
         run: cargo build --release --target wasm32-wasip1
 
-      - name: Build CLI tool
-        run: cargo build --release --features cli --bin http-execute
+  build-lsp:
+    name: Build LSP & CLI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build LSP server and CLI
+        working-directory: lsp
+        run: cargo build --release
+
+      - name: Run LSP tests
+        working-directory: lsp
+        run: cargo test
 
   lint:
     name: Lint
@@ -43,9 +58,18 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+          targets: wasm32-wasip1
 
-      - name: Check formatting
+      - name: Check WASM formatting
         run: cargo fmt -- --check
 
-      - name: Run clippy
+      - name: Check LSP formatting
+        working-directory: lsp
+        run: cargo fmt -- --check
+
+      - name: Clippy WASM
+        run: cargo clippy --target wasm32-wasip1 -- -D warnings
+
+      - name: Clippy LSP
+        working-directory: lsp
         run: cargo clippy -- -D warnings

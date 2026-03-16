@@ -1,0 +1,52 @@
+### Environment Variables Example
+## This file demonstrates using environment variables from
+## http-client.env.json (public) and http-client.private.env.json (private).
+##
+## The active environment is set by "activeEnv" in http-client.env.json.
+## Change it to switch between development, staging, production.
+##
+## Available environments: development, staging, production
+
+### GET request using environment base_url
+GET {{base_url}}/get
+Accept: application/json
+
+### GET with API key from environment
+GET {{api_url}}/headers
+X-Api-Key: {{api_key}}
+Accept: application/json
+
+### POST with auth token from environment
+POST {{api_url}}/post
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "message": "Hello from {{base_url}}"
+}
+
+### Mix file variables with environment variables
+@endpoint = /anything
+
+GET {{base_url}}{{endpoint}}
+X-Custom-Value: my-value
+Authorization: Bearer {{auth_token}}
+
+### Capture response and combine with env vars
+POST {{api_url}}/post
+Content-Type: application/json
+
+{
+  "environment": "development",
+  "api_key": "{{api_key}}"
+}
+
+> {%
+  client.global.set("request_url", response.body.url);
+%}
+
+###
+
+### Use captured variable from previous request
+GET {{base_url}}/get?previous_url={{request_url}}
+Accept: application/json

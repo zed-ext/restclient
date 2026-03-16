@@ -1,0 +1,30 @@
+[
+  {
+    "label": "▶ Send Request",
+    "command": "http-client",
+    "args": ["$ZED_FILE", "$ZED_ROW"],
+    "tags": ["http-request"],
+    "reveal": "always",
+    "show_summary": false,
+    "show_command": false
+  },
+  {
+    "label": "⊕ Send in New Tab: $ZED_CUSTOM_url",
+    "command": "http-client",
+    "args": ["$ZED_FILE", "$ZED_ROW"],
+    "tags": ["http-request"],
+    "reveal": "always",
+    "use_new_terminal": true,
+    "show_summary": false,
+    "show_command": false
+  },
+  {
+    "label": "📋 Generate cURL",
+    "command": "http-client",
+    "args": ["$ZED_FILE", "$ZED_ROW", "--curl"],
+    "tags": ["http-request"],
+    "reveal": "always",
+    "show_summary": false,
+    "show_command": false
+  }
+]

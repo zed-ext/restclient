@@ -4,15 +4,26 @@
 
 <h1 align="center">REST Client Extension for Zed</h1>
 
-A REST client extension for Zed IDE that allows you to write and execute HTTP requests directly from `.http` files.
+<p align="center">
+  <a href="https://github.com/zed-ext/restclient/actions/workflows/ci.yml"><img src="https://github.com/zed-ext/restclient/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/zed-ext/restclient/releases/tag/v0.1.0"><img src="https://img.shields.io/github/v/release/zed-ext/restclient?color=blue" alt="Release"></a>
+  <a href="https://github.com/zed-ext/restclient/blob/main/LICENSE"><img src="https://img.shields.io/github/license/zed-ext/restclient" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/language-Rust-orange" alt="Rust">
+  <img src="https://img.shields.io/badge/platform-wasm32--wasip1-blueviolet" alt="WASM">
+  <a href="https://github.com/zed-ext/restclient/stargazers"><img src="https://img.shields.io/github/stars/zed-ext/restclient?style=social" alt="Stars"></a>
+</p>
 
-## 🎬 Demo
+<p align="center">
+  A REST client extension for <a href="https://zed.dev">Zed</a> that lets you write and execute HTTP requests directly from <code>.http</code> and <code>.rest</code> files.
+</p>
+
+## Demo
 
 ![Demo](docs/video/demo.gif)
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ### 1. Install the Extension
 
@@ -22,11 +33,19 @@ A REST client extension for Zed IDE that allows you to write and execute HTTP re
 
 ### 2. Restart Zed
 
-**Important**: Completely quit Zed (`Cmd+Q` on macOS) and reopen it.
+Completely quit Zed (`Cmd+Q` on macOS) and reopen it.
 
-### 3. Create a Test File
+### 3. Try the Examples
 
-Create `test.http`:
+Open any file from the `examples/` directory:
+
+- `examples/basic.http` — GET, POST, PUT, PATCH, DELETE
+- `examples/variables.http` — File-level variables, nested resolution
+- `examples/response-capture.http` — Save values from responses
+- `examples/edge-cases.http` — Error codes, slow requests, response formats
+- `examples/environments.rest` — Environment variables (JetBrains-compatible)
+
+Or create your own `.http` file:
 
 ```http
 ### Test request
@@ -35,84 +54,44 @@ GET https://httpbin.org/get
 
 ### 4. Execute the Request
 
-**Option A: Using Command Palette (Works Immediately)**
+**Option A: Click the ▶ Send Button**
+
+Look above each HTTP request — you'll see a clickable **▶ Send** button.
+Click it to execute the request and see the response in the terminal panel.
+
+**Option B: Send in New Tab**
+
+Click the **⊕ Send in New Tab** button to open the response in a dedicated terminal tab (labeled with the request URL).
+
+**Option C: Generate cURL**
+
+Click the **📋 Generate cURL** button to copy the request as a cURL command to your clipboard.
+
+**Option D: Using Command Palette**
 
 1. Click anywhere in the request
-2. Press `Cmd+Shift+P` (macOS) or `Ctrl+Shift+P` (Windows/Linux)
+2. Press `Cmd+Shift+P` (macOS) or `Ctrl+Shift+P` (Linux)
 3. Type "task spawn"
-4. Select "Send Request at Cursor"
-5. See response in terminal!
-
-**Option B: Set Up Keyboard Shortcut (Recommended for Frequent Use)**
-
-1. Press `Cmd+,` to open Zed settings
-2. Click **"Open Keymap"** in the top right
-3. Add this to your keymap:
-
-```json
-[
-  {
-    "context": "Editor",
-    "bindings": {
-      "ctrl-enter": ["task::Spawn", {"task_name": "Send Request at Cursor"}]
-    }
-  }
-]
-```
-
-4. Save the file
-5. Now just press `Ctrl+Enter` anywhere in a request to execute it!
+4. Select "▶ Send Request", "⊕ Send in New Tab", or "📋 Generate cURL"
 
 ---
 
-## 🎯 How It Works
+## Features
 
-### Cursor-Based Execution
-
-Just place your cursor **anywhere** in a request and run the command. The extension automatically:
-
-1. Gets your cursor line number
-2. Finds which request block contains that line
-3. Executes that specific request
-
-**No need to select text or number your requests!**
-
-### Example
-
-```http
-### Get user info
-GET https://jsonplaceholder.typicode.com/users/1
-
-### Create new post
-POST https://jsonplaceholder.typicode.com/posts
-Content-Type: application/json
-
-{
-  "title": "My Post",
-  "userId": 1
-}
-
-### Delete user
-DELETE https://jsonplaceholder.typicode.com/users/1
-```
-
-Click anywhere in the POST request (lines 5-12) and execute - only that request runs!
+- **▶ Send Request** — Execute HTTP requests with a single click, reusing the same terminal
+- **⊕ Send in New Tab** — Execute in a new terminal tab, titled with the request URL
+- **📋 Generate cURL** — Copy any request as a cURL command to clipboard
+- **Syntax Highlighting** — Full highlighting for `.http` and `.rest` files
+- **Autocompletion** — HTTP methods, headers, header values, and variable references
+- **Document Symbols** — Navigate requests via the symbol outline
+- **Variable Support** — `@variable = value` declarations with `{{variable}}` substitution
+- **Response Variable Capture** — Save values from responses with `client.global.set()` (JetBrains-compatible)
+- **Environment Variables** — JetBrains-compatible `http-client.env.json` + `http-client.private.env.json` with parent directory search
+- **Multiple Requests** — Use `###` separators for multiple requests per file
 
 ---
 
-## ✨ Features
-
-✅ **Cursor-Based Execution** - Click anywhere in a request to run it
-✅ **Syntax Highlighting** - Full syntax highlighting for `.http` and `.rest` files
-✅ **Multiple Request Formats** - Support for GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS
-✅ **Headers & Body** - Full support for custom headers and request bodies
-✅ **Request Separator** - Use `###` to separate multiple requests in a file
-✅ **Variable Support** - Use `@variable = value` and `{{variable}}` syntax
-✅ **No Configuration Required** - Works out of the box
-
----
-
-## 📖 Writing HTTP Requests
+## Writing HTTP Requests
 
 ### Basic Request
 
@@ -141,96 +120,9 @@ Content-Type: application/json
 GET https://api.example.com/data
 Authorization: Bearer your-token-here
 Accept: application/json
-User-Agent: REST Client
-```
-
-### Multiple Requests in One File
-
-```http
-### Get all users
-GET https://api.example.com/users
-
-### Get specific user
-GET https://api.example.com/users/123
-
-### Create user
-POST https://api.example.com/users
-Content-Type: application/json
-
-{
-  "name": "Jane"
-}
-```
-
-Each `###` starts a new request block. Click anywhere in a block to execute just that request.
-
----
-
-## 🎨 File Format
-
-The extension supports the [JetBrains HTTP Client file format](https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html):
-
-```http
-### Comment describing the request
-METHOD URL [HTTP-version]
-Header-Name: Header-Value
-[Another-Header: Value]
-
-[Request Body]
-```
-
-### Request Separators
-
-Use `###` to separate multiple requests:
-
-```http
-### First request
-GET https://example.com/api/users
-
-###
-### Second request
-POST https://example.com/api/users
-```
-
-### Comments
-
-Lines starting with `#` or `//` are comments:
-
-```http
-# This is a comment
-// This is also a comment
-
-### Actual request
-GET https://api.example.com
-```
-
-### Headers
-
-One header per line in `Name: Value` format:
-
-```http
-GET https://api.example.com
-Authorization: Bearer abc123
-Content-Type: application/json
-Accept: application/json
-```
-
-### Request Body
-
-Add request body after a blank line:
-
-```http
-POST https://api.example.com/data
-Content-Type: application/json
-
-{
-  "key": "value"
-}
 ```
 
 ### Variables
-
-Declare variables with `@name = value`:
 
 ```http
 @baseUrl = https://api.example.com
@@ -240,12 +132,7 @@ Declare variables with `@name = value`:
 GET {{baseUrl}}/users/{{userId}}
 ```
 
-Variables are substituted at parse time and work in:
-- URLs
-- Header values
-- Request bodies
-
-Variables support nested resolution:
+Variables work in URLs, header values, and request bodies. Nested resolution is supported:
 
 ```http
 @protocol = https
@@ -255,120 +142,146 @@ Variables support nested resolution:
 GET {{baseUrl}}/api/users
 ```
 
----
+### Response Variable Capture
 
-## 🔧 Alternative Execution Methods
-
-### Method 1: Command Palette (Default)
-
-```
-Cmd+Shift+P → "task spawn" → "Send Request at Cursor"
-```
-
-**Pros**: No setup required, works immediately
-**Best for**: Quick testing, first-time use
-
-### Method 2: Keyboard Shortcut (Recommended)
-
-Set up `Ctrl+Enter` (see Quick Start above)
-
-**Pros**: Fastest, most convenient
-**Best for**: Frequent API testing
-
-### Method 3: Command Line
-
-```bash
-# Build the CLI tool
-cargo build --release --features cli --bin http-execute
-
-# Execute request at specific line
-cargo run --release --features cli --bin http-execute test.http --line 10
-
-# Execute first request (default)
-./target/release/http-execute test.http
-```
-
-**Pros**: Scriptable, CI/CD integration
-**Best for**: Automation, testing pipelines
-
----
-
-## 🐛 Troubleshooting
-
-### Task doesn't appear in command palette
-
-1. Make sure you're typing "task spawn" (not just "send" or "request")
-2. Restart Zed completely (`Cmd+Q` and reopen)
-3. Verify extension is installed: `Cmd+Shift+P` → "extensions"
-
-### "No HTTP request found at line X"
-
-Your cursor is outside any request block. Move it inside a request:
+Save values from HTTP responses and reuse them in later requests (JetBrains HTTP Client syntax):
 
 ```http
-###                    ← Don't put cursor here
-# Comment line         ← Or here
-                       ← Or here
-GET https://...        ← ✅ Put cursor here
-Content-Type: ...      ← ✅ Or here
-                       ← ✅ Or here
-{ "data": "value" }    ← ✅ Or here
-                       ← ✅ Or here
-###                    ← Don't put cursor here
+### Login and capture the token
+POST https://api.example.com/login
+Content-Type: application/json
+
+{
+  "username": "demo",
+  "password": "secret"
+}
+
+> {%
+  client.global.set("token", response.body.access_token);
+  client.global.set("user_id", response.body.user.id);
+%}
+
+###
+
+### Use the captured token
+GET https://api.example.com/users/{{user_id}}
+Authorization: Bearer {{token}}
 ```
 
-### Keyboard shortcut doesn't work
+**Supported expressions:**
 
-1. Make sure you're in a `.http` or `.rest` file
-2. Check you added the keymap correctly (see Quick Start)
-3. Restart Zed after editing keymap
-4. Try the command palette method to verify the extension works
+| Expression | Description |
+|---|---|
+| `response.body.field` | JSON field access (dot notation) |
+| `response.body.data[0].id` | Array index access |
+| `response.body.user.profile.name` | Nested field access |
+| `response.headers.valueOf("X-Request-Id")` | Response header value |
+| `response.status` | HTTP status code |
+| `"string literal"` | Static string value |
 
-### Syntax highlighting not working
-
-1. Check file extension is `.http` or `.rest` (not `.txt`)
-2. Restart Zed completely (`Cmd+Q`)
-3. Reinstall: `./install_to_zed.sh`
-
-### Seeing duplicate tasks in the list
-
-This is normal Zed behavior - the task history shows previous runs. Just select any "Send Request at Cursor" - they're all identical.
-
-**Solution**: Set up the keyboard shortcut to skip the task list entirely!
+Captured variables are persisted to `.http-client/.global-variables.json` and available across requests.
 
 ---
 
-## 📋 Example File
+## File Format
 
-See `test.http` for comprehensive examples including:
+The extension supports the [JetBrains HTTP Client file format](https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html):
 
-- Simple GET requests
-- POST with JSON bodies
-- Requests with custom headers
-- Form data submissions
-- Query parameters
-- Variable declarations
+```http
+### Comment describing the request
+METHOD URL
+Header-Name: Header-Value
 
----
+Request Body
+```
 
-## 🚀 Roadmap
+Use `###` to separate multiple requests. Lines starting with `#` or `//` are comments.
 
-- [x] Syntax highlighting
-- [x] HTTP request parsing
-- [x] CLI tool for executing requests
-- [x] Zed task integration
-- [x] Cursor-based execution
-- [x] Variable substitution in requests
-- [ ] Environment management (`.http-client/environments.json`)
-- [ ] Response handlers with JavaScript
-- [ ] File reference support (`< ./file.json`)
-- [ ] Response formatting and pretty-printing
-- [ ] Request history
-- [ ] Certificate and authentication helpers
+> **Tip:** Use `### Section Title` for section dividers between requests. Standalone `# comment` lines
+> placed after a blank line following a request may not be highlighted correctly, because the
+> tree-sitter HTTP grammar can interpret them as request body content. Using `###` ensures
+> consistent syntax highlighting throughout the file.
 
 ---
 
-## 🛠️ Development
+## Environment Variables
+
+Environment variables follow the [JetBrains HTTP Client convention](https://www.jetbrains.com/help/idea/http-client-in-product-code-editor.html). Place environment files alongside your `.http`/`.rest` files:
+
+```
+your-project/
+├── http-client.env.json           # Public environment variables (commit to git)
+├── http-client.private.env.json   # Private overrides (gitignored — secrets go here)
+├── .http-client/
+│   └── .global-variables.json     # Persisted response capture variables
+├── api.http
+└── api.rest
+```
+
+**`http-client.env.json`** (public — safe to commit):
+
+```json
+{
+  "activeEnv": "development",
+  "development": {
+    "base_url": "https://httpbin.org",
+    "api_url": "https://httpbin.org",
+    "timeout": "5000"
+  },
+  "staging": {
+    "base_url": "https://staging.example.com",
+    "api_url": "https://staging.example.com/api"
+  },
+  "production": {
+    "base_url": "https://api.example.com",
+    "api_url": "https://api.example.com/api"
+  }
+}
+```
+
+**`http-client.private.env.json`** (private — add to `.gitignore`):
+
+```json
+{
+  "development": {
+    "api_key": "dev-key-12345",
+    "auth_token": "dev-token-abcdef"
+  },
+  "staging": {
+    "api_key": "staging-key-67890",
+    "auth_token": "staging-token-ghijkl"
+  }
+}
+```
+
+Private variables override public ones with the same name. The extension searches the directory containing your `.http` file first, then walks up parent directories.
+
+The `"activeEnv"` key in `http-client.env.json` specifies which environment is active. Change it to switch environments:
+
+```json
+"activeEnv": "staging"
+```
+
+Then reference environment variables in your requests:
+
+```http
+### Uses base_url from the active environment
+GET {{base_url}}/api/users
+Authorization: Bearer {{auth_token}}
+```
+
+**Variable resolution order** (highest priority first):
+
+1. File-level variables (`@variable = value`)
+2. Global variables (captured from response handlers)
+3. Active environment variables
+4. System environment variables
+
+See `examples/environments.rest` for a full working example.
+
+---
+
+## Development
 
 ### Building
 
@@ -376,18 +289,14 @@ See `test.http` for comprehensive examples including:
 # Build the WASM extension
 cargo build --release --target wasm32-wasip1
 
-# Build the CLI tool
-cargo build --release --features cli --bin http-execute
+# Build the LSP server and CLI
+cd lsp && cargo build --release
 ```
 
-### Testing
+### Installing
 
 ```bash
-# Test the parser
-cargo test
-
-# Test the CLI with a sample file
-cargo run --release --features cli --bin http-execute test.http --line 19
+./install_to_zed.sh
 ```
 
 ### Project Structure
@@ -395,91 +304,58 @@ cargo run --release --features cli --bin http-execute test.http --line 19
 ```
 restclient/
 ├── src/
-│   ├── lib.rs              # Extension entry point
-│   ├── parser.rs           # HTTP request parser
-│   ├── bin/
-│   │   └── http_execute.rs # CLI tool for executing requests
-│   └── ...
-├── languages/http/         # Language configuration
-│   ├── config.toml         # Language settings
-│   ├── highlights.scm      # Syntax highlighting rules
-│   └── tasks.json          # Task definitions
-├── grammars/http.wasm      # Compiled Tree-sitter grammar
-└── extension.toml          # Extension manifest
+│   └── lib.rs              # WASM extension entry point
+├── lsp/
+│   ├── src/
+│   │   ├── main.rs         # LSP server (completions, symbols, diagnostics)
+│   │   ├── parser.rs       # HTTP file parser
+│   │   ├── variables.rs    # Variable resolution
+│   │   ├── response_handler.rs  # Response variable capture
+│   │   └── bin/
+│   │       └── http-client.rs  # CLI binary for executing requests
+│   └── Cargo.toml
+├── languages/http/
+│   ├── config.toml         # Language configuration
+│   ├── highlights.scm      # Syntax highlighting
+│   ├── runnables.scm       # Tree-sitter runnable captures
+│   └── tasks.json          # Task definitions (▶ Send / ⊕ New Tab / 📋 cURL)
+├── examples/
+│   ├── http-client.env.json       # Public environment config
+│   ├── http-client.private.env.json # Private environment config
+│   ├── .http-client/
+│   │   └── .global-variables.json # Response capture storage
+│   ├── basic.http          # GET, POST, PUT, PATCH, DELETE examples
+│   ├── variables.http      # Variable substitution examples
+│   ├── response-capture.http  # Response variable capture examples
+│   ├── edge-cases.http     # Error codes, slow requests, formats
+│   └── environments.rest   # Environment variables example
+├── grammars/               # Tree-sitter grammar
+├── extension.toml          # Extension manifest
+└── Cargo.toml              # WASM crate config
 ```
 
 ---
 
-## 📚 Documentation
+## Troubleshooting
 
-- **[docs/SETUP.md](docs/SETUP.md)** - 5-minute setup guide
-- **[docs/CURSOR_BASED.md](docs/CURSOR_BASED.md)** - Complete guide to cursor-based execution
-- **[docs/SLASH_COMMANDS.md](docs/SLASH_COMMANDS.md)** - Using slash commands (requires LLM)
-- **[docs/QUICK_START_SLASH.md](docs/QUICK_START_SLASH.md)** - Quick reference for slash commands
+### ▶ Send buttons don't appear
+
+1. Restart Zed completely (`Cmd+Q` and reopen)
+2. Check LSP is running: View → Server Logs → HTTP LSP
+3. Reinstall: `./install_to_zed.sh`
+
+### Syntax highlighting not working
+
+1. Check file extension is `.http` or `.rest`
+2. Restart Zed completely
+3. Reinstall: `./install_to_zed.sh`
 
 ---
 
-## 📝 License
+## License
 
 MIT
 
-## 🤝 Contributing
+## Contributing
 
-Contributions welcome! Please open an issue or PR.
-
----
-
-## 💡 Tips
-
-### Tip 1: Use Variables for Common Values
-
-```http
-@host = api.example.com
-@token = abc123
-
-GET https://{{host}}/users
-Authorization: Bearer {{token}}
-```
-
-### Tip 2: Organize Requests with Comments
-
-```http
-### ============================================
-### User Management API
-### ============================================
-
-### Get all users
-GET https://api.example.com/users
-
-### Get specific user
-GET https://api.example.com/users/1
-
-### ============================================
-### Post Management API
-### ============================================
-
-### Get all posts
-GET https://api.example.com/posts
-```
-
-### Tip 3: Keep Environment-Specific Files
-
-```
-api.http           # Shared requests
-dev.http          # Development endpoints
-staging.http      # Staging endpoints
-production.http   # Production endpoints
-```
-
-### Tip 4: Version Control Your Requests
-
-`.http` files are just text - commit them to git alongside your code!
-
-```bash
-git add api.http
-git commit -m "Add user authentication endpoints"
-```
-
----
-
-**Happy API Testing! 🚀**
+Contributions welcome! Please open an issue or PR. See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for details.

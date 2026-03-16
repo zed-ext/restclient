@@ -1,0 +1,67 @@
+# Edge Cases & Debugging
+# Demonstrates error responses, slow requests (spinner test), and various status codes.
+
+### 200 OK
+GET https://httpbin.org/status/200
+
+### 201 Created
+POST https://httpbin.org/status/201
+
+### 204 No Content
+DELETE https://httpbin.org/status/204
+
+### 301 Redirect (followed automatically)
+GET https://httpbin.org/redirect/1
+
+### 400 Bad Request
+GET https://httpbin.org/status/400
+
+### 401 Unauthorized
+GET https://httpbin.org/status/401
+
+### 403 Forbidden
+GET https://httpbin.org/status/403
+
+### 404 Not Found
+GET https://httpbin.org/status/404
+
+### 500 Internal Server Error
+GET https://httpbin.org/status/500
+
+### 503 Service Unavailable
+GET https://httpbin.org/status/503
+
+## ── Slow responses (test the spinner) ───────────────────────
+## These intentionally delay — watch the animated spinner and elapsed time counter.
+
+### 3-second delay
+GET https://httpbin.org/delay/3
+Accept: application/json
+
+### 7-second delay
+GET https://httpbin.org/delay/7
+Accept: application/json
+
+### 10-second delay (stress test)
+GET https://httpbin.org/delay/10
+Accept: application/json
+
+### ── Response formats ────────────────────────────────────────
+
+### JSON response (auto-colorized)
+GET https://httpbin.org/json
+
+### HTML response
+GET https://httpbin.org/html
+
+### XML response
+GET https://httpbin.org/xml
+
+### UTF-8 encoded response
+GET https://httpbin.org/encoding/utf8
+
+### Gzip-compressed response
+GET https://httpbin.org/gzip
+
+### Large response (tests output handling)
+GET https://httpbin.org/bytes/4096

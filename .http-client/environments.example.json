@@ -1,0 +1,26 @@
+{
+  "development": {
+    "base_url": "http://localhost:3000",
+    "api_url": "http://localhost:3000/api",
+    "api_key": "your_dev_api_key",
+    "auth_token": "your_dev_auth_token",
+    "timeout": "5000",
+    "debug": "true"
+  },
+  "staging": {
+    "base_url": "https://staging.example.com",
+    "api_url": "https://staging.example.com/api",
+    "api_key": "your_staging_api_key",
+    "auth_token": "your_staging_auth_token",
+    "timeout": "10000",
+    "debug": "false"
+  },
+  "production": {
+    "base_url": "https://api.example.com",
+    "api_url": "https://api.example.com/api",
+    "api_key": "your_production_api_key",
+    "auth_token": "your_production_auth_token",
+    "timeout": "15000",
+    "debug": "false"
+  }
+}

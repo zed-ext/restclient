@@ -1,16 +1,11 @@
 # Rust / Zed Extension
 target/
-Cargo.lock
 *.so
 *.dylib
 *.dll
-*.wasm
 
-# Tree-sitter generated files
-grammars/*/src/
-grammars/*/node_modules/
-grammars/**/parser.c
-grammars/**/binding.cc
+# Tree-sitter grammar (cloned by Zed during dev extension install)
+grammars/http/
 
 # IDE
 .idea/
@@ -22,9 +17,22 @@ grammars/**/binding.cc
 # macOS
 .DS_Store
 
+# Compiled test binaries
+lsp/test_parser
+lsp/test_parser2
+
 # Test artifacts
 tests/fixtures/temp/
-.http-client/history/
+.http-responses/
+
+# Private environment config (contains secrets — any directory)
+**/http-client.private.env.json
+
+# Persisted response variables and local state (any directory)
+**/.http-client/.global-variables.json
+**/.http-client/active-environment
+**/.http-client/environments.json
+**/.http-client/history/
 
 # Node.js (for grammar development)
 node_modules/
@@ -40,16 +48,25 @@ venv/
 
 # Editor backups
 *.bak
+*.backup
+*.orig
 *.tmp
 
-# Old/redundant documentation (keep only README.md and docs/)
-
-# Archived documentation (development notes, not needed in repo)
-archived-docs/
+# Zed local settings
 .zed/
 
 # Grammar backups
 grammars/*.backup
+
+# Video source files (keep only .gif for README)
+*.mov
+*.mp4
+
+# Tree-sitter generated C sources
+src/grammar.json
+src/node-types.json
+src/parser.c
+src/tree_sitter/
 
 # Built extension (generated during build)
 extension.wasm
